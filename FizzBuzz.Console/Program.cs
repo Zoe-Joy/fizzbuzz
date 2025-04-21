@@ -87,7 +87,7 @@ namespace FizzBuzz.Console
 
             do
             {
-                System.Console.WriteLine($"Player {playerName}, Please enter your answer for round {round}:");
+                System.Console.Write($"Player {playerName}, Please enter your answer for round {round} : ");
                 playersAnswer = System.Console.ReadLine()!;
                 validationResult = validator.ValidateInput(playersAnswer);
                 if (!validationResult)
@@ -106,8 +106,9 @@ namespace FizzBuzz.Console
 
             do
             {
-                System.Console.WriteLine("Please enter number of players (1-5)");
+                System.Console.Write("Please enter number of players (1-5) : ");
                 var noOfPlayers = System.Console.ReadLine();
+                System.Console.WriteLine();
                 validPlayerCount = validator.ValidatePlayerCount(noOfPlayers!);
                 if (!validPlayerCount)
                 {
