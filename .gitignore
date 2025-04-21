@@ -1,0 +1,9 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/FizzBuzz.Console/bin/Debug/net8.0
+/FizzBuzz.Console/obj
+/FizzBuzz.Console.Tests/bin/Debug/net8.0
+/FizzBuzz.Console.Tests/obj
