@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using FizzBuzz.Console.Models;
+﻿using FizzBuzz.Console.Models;
 using FizzBuzz.Console.Services;
 using Validator = FizzBuzz.Console.Services.Validator;
 
@@ -7,7 +6,7 @@ namespace FizzBuzz.Console
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static void Main(string[] _)
         {
             DisplayBanner();
 
@@ -19,42 +18,10 @@ namespace FizzBuzz.Console
                 .Select(index => new Player { Name = index.ToString(), IsStillInTheGame = true }).ToList();
             
             var round = 1;
-            while (round <= 100 && players.Count(p => p.IsStillInTheGame) > 1)
-            {
-                foreach (Player player in players.Where(p => p.IsStillInTheGame).ToList())
-                {
-                    var playerAnswer = CaptureAndValidateUserInput(round, validator, player.Name);
-
-                    var correctAnswer = validAnswers[round];
-                    if (playerAnswer == correctAnswer)
-                    {
-                        System.Console.WriteLine(
-                            $"You have entered the correct answer for round: {round} which is : {correctAnswer}");
-                        System.Console.WriteLine();
-                    }
-                    else
-                    {
-                        System.Console.WriteLine(
-                            $"The Output for round: {round} is : {correctAnswer} but you entered: {playerAnswer}");
-                        System.Console.WriteLine(
-                            $"Player {player.Name}, you are out of the game.");
-                        System.Console.WriteLine();
-                        player.IsStillInTheGame = false;
-                    }
-
-                    if (players.Count(p => p.IsStillInTheGame) == 1)
-                    {
-                        break;
-                    }
-
-                    round++;
-                }
-            }
-
+            HandlePlayerRounds(round, players, validator, validAnswers);
 
             var winningPlayer = players.SingleOrDefault(p => p.IsStillInTheGame);
-            System.Console.WriteLine();
-            System.Console.WriteLine($"Player {winningPlayer?.Name} is the WINNER!");
+            PrintOutputMessage($"Player {winningPlayer?.Name} is the WINNER!");
 
             System.Console.ReadKey();
         }
@@ -77,7 +44,43 @@ namespace FizzBuzz.Console
             System.Console.WriteLine();
         }
 
-        private static string? CaptureAndValidateUserInput(int round, Validator validator, string playerName)
+        private static void HandlePlayerRounds(int round, List<Player> players, Validator validator, List<string> validAnswers)
+        {
+            while (round <= 100 && players.Count(p => p.IsStillInTheGame) > 1)
+            {
+                foreach (Player player in players.Where(p => p.IsStillInTheGame).ToList())
+                {
+                    var playerAnswer = CaptureAndValidateUserInput(round, validator, player.Name);
+
+                    var correctAnswer = validAnswers[round];
+                    if (playerAnswer == correctAnswer)
+                    {
+                        PrintOutputMessage($"You have entered the correct answer for round: {round} which is : {correctAnswer}");
+                    }
+                    else
+                    {
+                        PrintOutputMessage($"The Output for round: {round} is : {correctAnswer} but you entered: {playerAnswer}. " +
+                                           $"Player {player.Name}, you are out of the game.");
+                        player.IsStillInTheGame = false;
+                    }
+
+                    if (players.Count(p => p.IsStillInTheGame) == 1)
+                    {
+                        break;
+                    }
+
+                    round++;
+                }
+            }
+        }
+
+        private static void PrintOutputMessage(string message)
+        {
+            System.Console.WriteLine(message);
+            System.Console.WriteLine();
+        }
+
+        private static string CaptureAndValidateUserInput(int round, Validator validator, string playerName)
         {
             bool validationResult;
             string playersAnswer;
@@ -85,8 +88,8 @@ namespace FizzBuzz.Console
             do
             {
                 System.Console.WriteLine($"Player {playerName}, Please enter your answer for round {round}:");
-                playersAnswer = System.Console.ReadLine();
-                validationResult = validator.ValidateInput(playersAnswer!);
+                playersAnswer = System.Console.ReadLine()!;
+                validationResult = validator.ValidateInput(playersAnswer);
                 if (!validationResult)
                 {
                     System.Console.WriteLine($"Invalid input. Please try again");
@@ -99,7 +102,7 @@ namespace FizzBuzz.Console
         private static int CaptureAndValidatePlayerCount(Validator validator)
         {
             bool validPlayerCount;
-            int playerCount = 0;
+            int playerCount;
 
             do
             {
@@ -115,23 +118,6 @@ namespace FizzBuzz.Console
             } while (!validPlayerCount);
 
             return playerCount;
-        }
-
-        private static void ConvertAndDisplayOutputForInputNumbers(IEnumerable<int> inputNumbers)
-        {
-            inputNumbers.ToList().ForEach(inputNumber =>
-            {
-                try
-                {
-                    var resultWord = Services.Converter.ConvertNumberToWord(inputNumber);
-                    System.Console.WriteLine($"The Output for input number: {inputNumber} is : {resultWord}");
-                }
-                catch (ArgumentOutOfRangeException argumentOutOfRangeException)
-                {
-                    System.Console.WriteLine($"The Output for input number: {inputNumber} is " +
-                        $": {argumentOutOfRangeException.Message}. Valid range is (1-100)");
-                }
-            });
         }
 
         #endregion
